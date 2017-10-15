@@ -4,6 +4,11 @@ import plotly.plotly as py
 import plotly.graph_objs as go
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
+from PIL import Image
+import numpy as np
+
+
+from wordcloud import WordCloud, STOPWORDS
 
 def get_tokens_and_frequency(token_list):
     """obtain word frequecy from pandas dataframe column of lists"""
@@ -36,6 +41,7 @@ def plot_word_frequency(word_list, plot_title):
     data = go.Data([trace1])
 
     layout = {
+     
         "title": plot_title,
         "yaxis": {"title": "Frequency"}
     }
@@ -99,11 +105,76 @@ def get_trace(X_pca, data, category, color):
         text=data[data.apply(lambda x: True if x==category else False).tolist()]
     )
     return trace
+def plot_comp(wordlist1, wordlist2):
+
+    category_counts = go.Bar(
+        x=list(wordlist1[0]),
+        y=list(wordlist1[1]),
+        text=list(wordlist1[1]),
+        name = 'total records',
+        textposition = 'auto',
+        marker=dict(
+            color='rgb(255,0,0)',
+            line=dict(
+                color='rgb(8,48,107)',
+                width=1.5),
+            ),
+        opacity=0.9
+    )
+
+    sample_category_counts = go.Bar(
+        x=list(wordlist2[0]),
+        y=list(wordlist2[1]),
+        text=list(wordlist2[1]),
+        name = 'samples',
+        textposition = 'auto',
+        marker=dict(
+            color='rgb(58,200,225)',
+            line=dict(
+                color='rgb(8,48,107)',
+                width=1.5)
+                
+            ),
+        opacity=0.9
+    )
+
+    return category_counts, sample_category_counts
+
+"""function not used in the notebook since I used the one with mask"""
+
+from wordcloud import WordCloud, STOPWORDS
 
 def plot_word_cloud(text):
     """ Generate word cloud given some input text doc """
-    word_cloud = WordCloud().generate(text)
-    plt.figure(figsize=(8,6), dpi=90)
+    word_cloud = WordCloud(stopwords=STOPWORDS,
+                          background_color='white',
+                          width=1200,
+                          height=1000).generate(text)
+    plt.figure(figsize=(12,9), dpi=300)
     plt.imshow(word_cloud, interpolation='bilinear')
     plt.axis("off")
     plt.show()
+    
+    
+    
+    
+"""here I will create a  function that I will use for the wordcloud visualization"""    
+
+
+def plot_word_cloud_mask(text, mask, in_stopwords):
+  stopwords = set(STOPWORDS)
+  for word in in_stopwords:
+      stopwords.add(word)
+  
+  wc = WordCloud(background_color="white", max_words=2000, mask=mask,
+                  stopwords=stopwords)
+  # generate word cloud
+  wc.generate(text)
+
+  # show
+  plt.figure(figsize=(12,9), dpi=300)
+  plt.imshow(wc, interpolation='bilinear')
+  plt.axis("off")
+  
+    
+
